@@ -35,6 +35,35 @@ Most rendering functions and themes accept a `background` parameter:
 ## Fast Rendering Mode
 Patterned bars (SVG hatched textures) can take seconds to render. If you are doing exploratory data analysis or adjusting layout and want instant feedback, set `render_mode = "fast"` in `bde_geom_col_pattern()`. This turns off textures and uses strictly solid colors.
 
+## Configuration Options
+
+### 1. Plot Dimensions (`bde_save_png`)
+The `bde_save_png()` function supports precise predefined pixel layouts aligned with BDE organizational documents. You can select the correct size by passing the `size_preset` argument:
+* `"dos_graficos_y_texto_1"` (1430 x 1622)
+* `"dos_graficos_y_textoinferior_1"` (2025 x 1370)
+* `"grafico_y_texto"` (3322 x 1640)
+* `"grafico_y_texto_inferior"` (4092 x 1237)
+* `"layuout_imagen"` (4092 x 1773)
+* `"texto_e_imagen"` (1805 x 1773)
+* `"tres_graficos_y_textoinferior_1"` (1306 x 1145)
+
+You optionally can provide custom absolute dimensions by providing `width_px` and `height_px` instead.
+
+### 2. Choosing Pattern / Color Order (`slot_order`)
+By default, standard BDE aesthetics apply to up to 8 chart series in a strict order:
+1: Gray, 2: Green, 3: Dark Yellow, 4: Orange/Yellow, 5: Light Blue, 6: Red, 7: Purple, 8: Brown. 
+
+If your data contains only 3 series but you want them to map to colors 1, 4, and 6 exactly, use the `slot_order` argument when initializing the styling layers:
+
+```r
+p <- p + theme_bde(background = bg_mode) +
+  bde_bar_style_layers(
+    series_levels = unique(df_long$series),
+    variant = style_variant,
+    slot_order = c(1, 4, 6) # Selects Gray, Orange, and Red
+  )
+```
+
 ## Examples
 
 ### Example Usage: Stacked Pattern Bars
