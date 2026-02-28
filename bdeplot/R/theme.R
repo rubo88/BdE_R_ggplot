@@ -52,8 +52,8 @@ bde_theme <- function(
             panel.grid.minor = ggplot2::element_blank(),
             panel.grid.major.x = ggplot2::element_blank(),
             panel.grid.major.y = ggplot2::element_line(color = axis_gray, linetype = "dashed", linewidth = 0.5),
-            axis.line = ggplot2::element_line(color = axis_gray, linewidth = 0.6),
-            axis.ticks = ggplot2::element_line(color = axis_gray, linewidth = 0.5),
+            axis.line = ggplot2::element_line(color = text_color, linewidth = 0.6),
+            axis.ticks = ggplot2::element_line(color = text_color, linewidth = 0.5),
             axis.text = ggplot2::element_text(color = text_color, size = axis_text_size),
             axis.text.x = ggplot2::element_text(
                 angle = 0,
@@ -71,6 +71,7 @@ bde_theme <- function(
                 margin = ggplot2::margin(t = -18, b = 22)
             ),
             legend.position = "bottom",
+            legend.title = ggplot2::element_blank(),
             legend.background = ggplot2::element_rect(fill = chart_bg, colour = NA),
             legend.key = ggplot2::element_rect(fill = chart_bg, colour = NA),
             legend.key.width = grid::unit(16, "mm"),
@@ -115,6 +116,11 @@ bde_apply_bar_orientation <- function(p, horizontal = FALSE, clip = "on") {
 #' @param text_color Explicit text color override.
 #' @param y_hjust Adjust horizontal anchor.
 #' @param y_vjust Adjust vertical anchor.
+#' @param duplicate_y_axis Logical. If TRUE, adds a duplicated Y axis to the right.
+#' @param x_label_right String. If provided, adds a right-aligned horizontal axis label for X.
+#' @param add_zero_line Logical. If TRUE, adds a solid horizontal line at Y = 0.
+#' @param add_100_line Logical. If TRUE, adds a solid horizontal line at Y = 100.
+#' @param x_text_angle Numeric. Angle for X-axis tick labels (e.g. 0, 45, 90).
 #' @export
 bde_apply_labels <- function(
     p,
@@ -127,7 +133,12 @@ bde_apply_labels <- function(
     background = c("blue", "transparent", "white"),
     text_color = NULL,
     y_hjust = -0.02,
-    y_vjust = -0.55) {
+    y_vjust = -0.55,
+    duplicate_y_axis = FALSE,
+    x_label_right = NULL,
+    add_zero_line = FALSE,
+    add_100_line = FALSE,
+    x_text_angle = 0) {
     if (!inherits(p, "ggplot")) stop("p must be a ggplot object.")
     background <- match.arg(background)
     if (is.null(text_color)) {
@@ -165,5 +176,53 @@ bde_apply_labels <- function(
                 size = y_label_size / ggplot2::.pt
             )
     }
+
+    if (duplicate_y_axis && !inherits(p$coordinates, "CoordFlip")) {
+        p <- p + ggplot2::scale_y_continuous(
+            sec.axis = ggplot2::dup_axis(name = NULL)
+        )
+    }
+
+    if (!is.null(x_label_right) && nzchar(x_label_right)) {
+        p <- p +
+            ggplot2::annotate(
+                "text",
+                x = Inf,
+                y = -Inf,
+                label = x_label_right,
+                hjust = 1.05,
+                vjust = 4.0,
+                colour = text_color,
+                family = base_family,
+                size = y_label_size / ggplot2::.pt
+            )
+    }
+
+    if (add_zero_line) {
+        if (inherits(p$coordinates, "CoordFlip")) {
+            p <- p + ggplot2::geom_vline(xintercept = 0, color = text_color, linewidth = 0.6)
+        } else {
+            p <- p + ggplot2::geom_hline(yintercept = 0, color = text_color, linewidth = 0.6)
+        }
+    }
+
+    if (add_100_line) {
+        if (inherits(p$coordinates, "CoordFlip")) {
+            p <- p + ggplot2::geom_vline(xintercept = 100, color = text_color, linewidth = 0.6)
+        } else {
+            p <- p + ggplot2::geom_hline(yintercept = 100, color = text_color, linewidth = 0.6)
+        }
+    }
+
+    if (!is.null(x_text_angle) && x_text_angle != 0) {
+        if (x_text_angle == 45) {
+            p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1))
+        } else if (x_text_angle == 90 || x_text_angle == -90) {
+            p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = x_text_angle, hjust = 1, vjust = 0.5))
+        } else {
+            p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = x_text_angle))
+        }
+    }
+
     p
 }

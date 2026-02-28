@@ -69,6 +69,9 @@ p <- bde_apply_labels(
     p,
     title = "ECONOMIC INDICATORS PROJECTIONS (2000-2020)",
     y_label = "Base 100 = 2000",
+    duplicate_y_axis = TRUE, # Duplicates the Y-axis onto the right side
+    x_label_right = "Years", # Adds a horizontal label to the far-right of the X-axis
+    add_100_line = TRUE, # Adds a solid white horizontal line at Y = 100
     background = bg_mode
 )
 

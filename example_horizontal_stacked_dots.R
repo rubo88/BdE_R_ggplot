@@ -59,8 +59,7 @@ p <- ggplot(df_long, aes(y = category, x = value)) +
         shape = 21,
         size = 4.5,
         stroke = 1.0
-    ) +
-    geom_vline(xintercept = 0, color = "#7F7F7F", linewidth = 0.6)
+    )
 
 # 3. Apply the BDE Theme & Scales
 p <- p +

@@ -44,7 +44,8 @@ df_long <- df_wide %>%
 df_line <- df_wide %>%
     mutate(
         period = factor(period, levels = periods),
-        net_total = rowSums(across(all_of(series_levels))) + rnorm(18, 0, 0.5)
+        net_total = rowSums(across(all_of(series_levels))) + rnorm(18, 0, 0.5),
+        line_series = factor("Net Total Trend", levels = c("Net Total Trend"))
     )
 
 # 2. Build the Plot
@@ -61,23 +62,18 @@ p <- ggplot(df_long, aes(x = period, y = value)) +
     # Add the overlaid line
     geom_line(
         data = df_line,
-        aes(x = period, y = net_total, group = 1),
-        color = line_color,
+        aes(x = period, y = net_total, group = 1, color = line_series, linetype = line_series),
         linewidth = 1.5,
         lineend = "round"
     ) +
     # Add points/markers to the line
     geom_point(
         data = df_line,
-        aes(x = period, y = net_total),
+        aes(x = period, y = net_total, color = line_series, shape = line_series),
         fill = line_color,
-        color = "#000000",
-        shape = 21,
         size = 4.2,
         stroke = 0.9
-    ) +
-    # Standard zero-line
-    geom_hline(yintercept = 0, color = "#7F7F7F", linewidth = 0.6)
+    )
 
 # 3. Apply the BDE Theme & Scales
 p <- p +
@@ -86,13 +82,25 @@ p <- p +
     bde_bar_style_layers(
         series_levels = series_levels,
         variant = style_variant,
-        nrow = 1 # Display legend in 1 row
+        nrow = 1, # Display bar legend in 1 row
+        mixed_legends = TRUE # Ensure line/shape legends aren't squashed!
+    ) +
+    # Apply standard BDE line aesthetic mappings
+    scale_color_manual(values = setNames(line_color, "Net Total Trend")) +
+    scale_linetype_manual(values = setNames("solid", "Net Total Trend")) +
+    scale_shape_manual(values = setNames(21, "Net Total Trend")) +
+    guides(
+        color = guide_legend(order = 2, title = NULL),
+        linetype = guide_legend(order = 2, title = NULL),
+        shape = guide_legend(order = 2, title = NULL)
     )
 
 p <- bde_apply_labels(
     p,
     title = "EXAMPLE: STACKED BARS WITH TREND LINE",
     y_label = "Contributions (pp)",
+    add_zero_line = TRUE,
+    x_text_angle = 45,
     background = bg_mode
 )
 

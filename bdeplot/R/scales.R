@@ -254,9 +254,10 @@ bde_bar_guides <- function(
     nrow = 2,
     order = 1,
     variant = c("default", "white"),
-    slot_order = NULL) {
+    slot_order = NULL,
+    mixed_legends = FALSE) {
     variant <- match.arg(variant)
-    ggplot2::guides(
+    guides_args <- list(
         fill = bde_fill_guide(
             series_levels,
             nrow = nrow,
@@ -276,6 +277,12 @@ bde_bar_guides <- function(
         pattern_frequency = "none",
         pattern_grid = "none"
     )
+
+    # If mixed_legends is TRUE, we shouldn't force color/shape/linetype to "none".
+    # Since ggplot2 defaults them to visible anyway when an aesthetic is mapped,
+    # we don't need to explicitly add them here unless we know we need to suppress them.
+    # We'll just pass the pattern-related drops to do.call.
+    do.call(ggplot2::guides, guides_args)
 }
 
 #' Wraps up BDE Guides and Scales in a single function
@@ -287,7 +294,8 @@ bde_bar_style_layers <- function(
     order = 1,
     render_mode = c("quality", "balanced", "fast"),
     variant = c("default", "white"),
-    slot_order = NULL) {
+    slot_order = NULL,
+    mixed_legends = FALSE) {
     render_mode <- match.arg(render_mode)
     variant <- match.arg(variant)
 
@@ -318,7 +326,8 @@ bde_bar_style_layers <- function(
                 nrow = nrow,
                 order = order,
                 variant = variant,
-                slot_order = slot_order
+                slot_order = slot_order,
+                mixed_legends = mixed_legends
             )
         )
     )
