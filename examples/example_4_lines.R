@@ -76,7 +76,7 @@ p <- bde_apply_labels(
 )
 
 # 4. Save the Output
-output_path <- "graphs_example/example_4_lines.png"
+output_path <- "../graphs_example/example_4_lines.png"
 dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
 
 bde_save_png(

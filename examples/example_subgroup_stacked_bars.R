@@ -97,7 +97,7 @@ p <- p +
     )
 
 # 5. Save the Output
-output_path <- "graphs_example/example_subgroup_stacked_bars.png"
+output_path <- "../graphs_example/example_subgroup_stacked_bars.png"
 dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
 
 bde_save_png(

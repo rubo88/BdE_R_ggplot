@@ -72,7 +72,7 @@ p <- bde_apply_labels(
 )
 
 # 4. Save the Output
-output_path <- "graphs_example/example_horizontal_grouped_bars.png"
+output_path <- "../graphs_example/example_horizontal_grouped_bars.png"
 dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
 
 bde_save_png(
